@@ -1,9 +1,12 @@
 import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import dotenv from "dotenv";
+import DBConnect from "./utils/DBConnect.js";
+dotenv.config({});
 
 const app = express();
-const port = 3001;
+const port = process.env.PORT || 3001;
 
 // middleware
 app.use(express.json());
@@ -20,5 +23,6 @@ app.get("/", (req, res) => {
 });
 
 app.listen(port, () => {
+  DBConnect();
   console.log(`Server is running on port ${port}`);
 });
