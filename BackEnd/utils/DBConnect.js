@@ -9,4 +9,4 @@ const BDConnect = async () => {
   }
 };
 
-export default BDConnect;
+export default BDConnect
