@@ -30,6 +30,10 @@ const userSchema = new mongoose.Schema({
     enum: ["Student", "Recruiter"],
     required: true,
   },
+  company: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Company",
+  },
   profile: {
     bio: {
       type: String,
