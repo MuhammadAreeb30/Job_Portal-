@@ -3,6 +3,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import dotenv from "dotenv";
 import DBConnect from "./utils/DBConnect.js";
+import userRouter from "./Router/user.router.js";
 dotenv.config({});
 
 const app = express();
@@ -17,6 +18,7 @@ const corsOptions = {
   credentials: true,
 };
 app.use(cors(corsOptions));
+app.use("/api/user", userRouter);
 
 app.get("/", (req, res) => {
   res.json({ message: "hello world" });
