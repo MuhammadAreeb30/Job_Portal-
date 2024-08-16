@@ -4,6 +4,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import DBConnect from "./utils/DBConnect.js";
 import userRouter from "./Router/user.router.js";
+import companyRouter from "./Router/company.router.js";
 dotenv.config({});
 
 const app = express();
@@ -19,6 +20,7 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 app.use("/api/users", userRouter);
+app.use("/api/company", companyRouter);
 
 app.get("/", (req, res) => {
   res.json({ message: "hello world" });
