@@ -1,4 +1,4 @@
-import User from "../model/user.model";
+import User from "../model/user.model.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
@@ -69,8 +69,8 @@ const login = async (req, res) => {
       expiresIn: "1d",
     });
 
-    user = {
-      userId: user._id,
+    const userData = {
+      _id: user._id,
       fullName: user.fullName,
       email: user.email,
       phone: user.phone,
@@ -82,11 +82,12 @@ const login = async (req, res) => {
       .status(201)
       .cookie("token", token, {
         maxAge: 1 * 24 * 60 * 60 * 1000,
-        httpsOnly: true,
+        httpOnly: true,
         sameSite: "strict",
       })
-      .json({ message: `welcome back ${user.fullName}.`, success: true });
+      .json({ message: `welcome ${user.fullName}.`, userData, success: true });
   } catch (error) {
+    console.log("login error", error);
     return res
       .status(400)
       .json({ message: "something went wrong", success: false });
@@ -109,33 +110,23 @@ const logout = async () => {
 const updateProfile = async (req, res) => {
   try {
     const { fullName, email, phone, bio, skills } = req.body;
-    if (!fullName || !email || !phone || !bio || !skills) {
-      return res
-        .status(400)
-        .json({ message: "something is missing", success: false });
-    }
     const userId = req.id;
-    const skillsArray = skills.split(",");
+    let skillsArray;
+    if (skills) {
+      skillsArray = skills.split(",");
+    }
     let user = await User.findById(userId);
     if (!user) {
       return res
         .status(404)
         .json({ message: "User not found", success: false });
     }
-    user.fullName = fullName;
-    user.email = email;
-    user.phone = phone;
-    user.profile.bio = bio;
-    user.profile.skills = skillsArray;
+    if (fullName) user.fullName = fullName;
+    if (email) user.email = email;
+    if (phone) user.phone = phone;
+    if (bio) user.profile.bio = bio;
+    if (skills) user.profile.skills = skillsArray;
     await user.save();
-    user = {
-      userId: user._id,
-      fullName: user.fullName,
-      email: user.email,
-      phone: user.phone,
-      role: user.role,
-      profile: user.profile,
-    };
     return res
       .status(201)
       .json({ message: "Profile update successfully.", user, success: true });
