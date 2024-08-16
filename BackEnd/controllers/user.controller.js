@@ -94,7 +94,7 @@ const login = async (req, res) => {
   }
 };
 
-const logout = async () => {
+const logout = async (req, res) => {
   try {
     return res
       .status(200)
