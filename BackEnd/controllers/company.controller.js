@@ -12,9 +12,9 @@ const registerCompany = async (req, res) => {
     if (existingCompany) {
       return res
         .status(400)
-        .json({ message: "Company already exists", success: false });
+        .json({ message: "You can't register same company.", success: false });
     }
-    const company = new Company({ companyName });
+    const company = new Company({ companyName, userId: req.id });
     await company.save();
     return res.status(201).json({
       message: "Company registered successfully.",
