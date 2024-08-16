@@ -18,7 +18,7 @@ const corsOptions = {
   credentials: true,
 };
 app.use(cors(corsOptions));
-app.use("/api/user", userRouter);
+app.use("/api/users", userRouter);
 
 app.get("/", (req, res) => {
   res.json({ message: "hello world" });
