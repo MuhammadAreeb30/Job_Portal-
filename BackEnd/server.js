@@ -5,6 +5,8 @@ import dotenv from "dotenv";
 import DBConnect from "./utils/DBConnect.js";
 import userRouter from "./Router/user.router.js";
 import companyRouter from "./Router/company.router.js";
+import applicationRouter from "./Router/application.router.js";
+import jobRouter from "./Router/job.router.js";
 dotenv.config({});
 
 const app = express();
@@ -19,8 +21,12 @@ const corsOptions = {
   credentials: true,
 };
 app.use(cors(corsOptions));
+
+// api's
 app.use("/api/users", userRouter);
 app.use("/api/company", companyRouter);
+app.use("/api/job", jobRouter);
+app.use("/api/application", applicationRouter);
 
 app.get("/", (req, res) => {
   res.json({ message: "hello world" });
