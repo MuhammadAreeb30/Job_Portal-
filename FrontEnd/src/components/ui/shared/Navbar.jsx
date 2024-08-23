@@ -54,7 +54,7 @@ const Navbar = () => {
                     </div>
                   </div>
                   <div className="flex flex-col gap-4">
-                    <Button>
+                    <Button className="bg-primary">
                       <User2 size={26} className="pr-2" />
                       View Profile
                     </Button>
