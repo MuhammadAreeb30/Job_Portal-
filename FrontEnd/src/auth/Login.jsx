@@ -10,14 +10,63 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Navbar from "@/components/ui/shared/Navbar";
-import { Link } from "react-router-dom";
+import axios from "axios";
+import { Loader2 } from "lucide-react";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Login = () => {
+  const [userData, setUserData] = useState({
+    email: "",
+    password: "",
+    role: "",
+  });
+  const [loader, setLoader] = useState(false);
+  const navigate = useNavigate();
+
+  const userDataHandler = (e) => {
+    setUserData({ ...userData, [e.target.name]: e.target.value });
+  };
+
+  const formSubmitHandler = async (e) => {
+    try {
+      e.preventDefault();
+      setLoader(true);
+      const response = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URI}/users/login`,
+        userData
+      );
+      var data = await response.data;
+      if (data.success === true) {
+        setUserData({ email: "", password: "", role: "" });
+        setLoader(false);
+        navigate("/");
+        return toast.success(data.message, {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+        });
+        // return alert(data.message);
+      }
+    } catch (error) {
+      setUserData({ email: "", password: "", role: "" });
+      setLoader(false);
+      alert("something went wrong");
+      console.error(error.message);
+    }
+  };
+
   return (
     <>
       <Navbar />
       <div className="flex justify-center items-center h-[90vh]">
-        <form action="">
+        <form onSubmit={formSubmitHandler}>
           <Card className="w-full max-w-sm">
             <CardHeader>
               <CardTitle className="text-2xl">Login</CardTitle>
@@ -31,28 +80,44 @@ const Login = () => {
                 <Input
                   id="email"
                   type="email"
+                  name="email"
+                  value={userData.email}
+                  onChange={userDataHandler}
                   placeholder="m@example.com"
                   required
                 />
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="password">Password</Label>
-                <Input id="password" type="password" required />
+                <Input
+                  id="password"
+                  name="password"
+                  value={userData.password}
+                  onChange={userDataHandler}
+                  type="password"
+                  required
+                />
               </div>
               <div className="grid gap-2">
                 <div className="flex items-center gap-4">
                   <div className="flex items-center gap-2">
                     <Input
-                      name="radio"
+                      name="role"
                       type="radio"
+                      value="student"
+                      checked={userData.role === "student"}
+                      onChange={userDataHandler}
                       className="cursor-pointer w-4"
                     />
                     <Label htmlFor="r1">Student</Label>
                   </div>
                   <div className="flex items-center gap-2">
                     <Input
-                      name="radio"
+                      name="role"
                       type="radio"
+                      value="recruiter"
+                      checked={userData.role === "recruiter"}
+                      onChange={userDataHandler}
                       className="cursor-pointer w-4"
                     />
                     <Label htmlFor="r2">Recruiter</Label>
@@ -61,7 +126,22 @@ const Login = () => {
               </div>
             </CardContent>
             <CardFooter className="flex flex-col">
-              <Button className="w-full bg-primary">Sign in</Button>
+              <Button
+                type="submit"
+                className="w-full bg-primary"
+                disabled={loader}
+              >
+                {loader ? (
+                  <>
+                    <span className="flex items-center gap-2">
+                      <Loader2 className="animate-spin" />
+                      Sign in
+                    </span>
+                  </>
+                ) : (
+                  "Sign in"
+                )}
+              </Button>
               <div className="mt-4 text-center text-sm">
                 Don&apos;t have an account?{" "}
                 <Link
