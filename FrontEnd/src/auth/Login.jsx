@@ -14,7 +14,7 @@ import axios from "axios";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 
 const Login = () => {
   const [userData, setUserData] = useState({
@@ -34,31 +34,25 @@ const Login = () => {
       e.preventDefault();
       setLoader(true);
       const response = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URI}/users/login`,
-        userData
+        `${import.meta.env.VITE_USER_URI}/login`,
+        userData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
       );
       var data = await response.data;
       if (data.success === true) {
         setUserData({ email: "", password: "", role: "" });
         setLoader(false);
         navigate("/");
-        return toast.success(data.message, {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-        });
-        // return alert(data.message);
+        return toast.success(data.message);
       }
     } catch (error) {
-      setUserData({ email: "", password: "", role: "" });
       setLoader(false);
-      alert("something went wrong");
-      console.error(error.message);
+      return toast.error(error.response.data.message);
     }
   };
 

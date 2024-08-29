@@ -12,8 +12,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import axios from "axios";
-import { toast } from "react-toastify";
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 const SignUp = () => {
   const [userData, setUserData] = useState({
@@ -36,48 +36,37 @@ const SignUp = () => {
   };
 
   const formSubmitHandler = async (e) => {
+    e.preventDefault();
+    setLoader(true);
+    const formData = new FormData();
+    formData.append("fullName", userData.fullName);
+    formData.append("email", userData.email);
+    formData.append("password", userData.password);
+    formData.append("phone", userData.phone);
+    formData.append("role", userData.role);
+    if (userData.file) {
+      formData.append("file", userData.file);
+    }
     try {
-      e.preventDefault();
-      setLoader(true);
       const response = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URI}/users/register`,
-        userData
+        `${import.meta.env.VITE_USER_URI}/register`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          withCredentials: true,
+        }
       );
       const data = await response.data;
       if (data.success === true) {
         setLoader(false);
-        setUserData({
-          fullName: "",
-          email: "",
-          password: "",
-          phone: "",
-          role: "",
-          file: "",
-        });
-        navigate("/");
-        return toast.success(data.message, {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-        });
+        navigate("/login");
+        return toast.success(data.message);
       }
     } catch (error) {
       setLoader(false);
-      return toast.success(error.response.data.message, {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "colored",
-      });
+      return toast.error(error.response.data.message);
       // console.log(error.response.data.message);
     }
   };
@@ -169,9 +158,9 @@ const SignUp = () => {
                       </div>
                     </div>
                     <div>
-                      <Label htmlFor="profile">Profile</Label>
+                      <Label htmlFor="file">Profile</Label>
                       <Input
-                        id="profile"
+                        id="file"
                         type="file"
                         name="file"
                         value={userData.file}
