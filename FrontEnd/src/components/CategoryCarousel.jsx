@@ -20,7 +20,7 @@ const CategoryCarousel = () => {
   ];
 
   return (
-    <section className="w-full py-8">
+    <section className="w-full py-10">
       <Carousel
         className="w-full max-w-xl mx-auto"
         plugins={[
