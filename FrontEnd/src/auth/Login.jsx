@@ -10,9 +10,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Navbar from "@/components/ui/shared/Navbar";
+import { setLoading, setUser } from "@/store/authSlice";
 import axios from "axios";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
@@ -22,8 +24,9 @@ const Login = () => {
     password: "",
     role: "",
   });
-  const [loader, setLoader] = useState(false);
+  const { loading } = useSelector((store) => store.auth);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const userDataHandler = (e) => {
     setUserData({ ...userData, [e.target.name]: e.target.value });
@@ -32,7 +35,7 @@ const Login = () => {
   const formSubmitHandler = async (e) => {
     try {
       e.preventDefault();
-      setLoader(true);
+      dispatch(setLoading(true));
       const response = await axios.post(
         `${import.meta.env.VITE_USER_URI}/login`,
         userData,
@@ -43,15 +46,17 @@ const Login = () => {
           withCredentials: true,
         }
       );
+
       var data = await response.data;
       if (data.success === true) {
+        dispatch(setUser(data.userData));
         setUserData({ email: "", password: "", role: "" });
-        setLoader(false);
+        dispatch(setLoading(false));
         navigate("/");
         return toast.success(data.message);
       }
     } catch (error) {
-      setLoader(false);
+      dispatch(setLoading(false));
       return toast.error(error.response.data.message);
     }
   };
@@ -123,9 +128,9 @@ const Login = () => {
               <Button
                 type="submit"
                 className="w-full bg-primary"
-                disabled={loader}
+                disabled={loading}
               >
-                {loader ? (
+                {loading ? (
                   <>
                     <span className="flex items-center gap-2">
                       <Loader2 className="animate-spin" />

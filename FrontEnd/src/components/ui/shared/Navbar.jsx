@@ -8,9 +8,26 @@ import {
 import { Button } from "@/components/ui/button";
 import { LogOut, User2 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
+import axios from "axios";
+import { toast } from "sonner";
 
 const Navbar = () => {
-  const user = false;
+  const { user } = useSelector((store) => store.auth);
+  const logOut = async () => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_USER_URI}/logout`
+      );
+      var data = await response.data;
+      if (data.success === true) {
+        return toast.success(data.message);
+      }
+    } catch (error) {
+      return toast.success(error.response.data.message);
+    }
+  };
+
   return (
     <div className="bg-white shadow-sm">
       <div className="flex justify-between items-center mx-auto max-w-7xl h-1/4 py-1">
@@ -49,7 +66,7 @@ const Navbar = () => {
                       <AvatarImage src="https://github.com/shadcn.png" />
                     </Avatar>
                     <div className="flex flex-col">
-                      <h4 className="font-medium">Muhammad Areeb</h4>
+                      <h4 className="font-medium">{user.fullName}</h4>
                       <p className="text-sm">Lorem ipsum dolor sit amet.</p>
                     </div>
                   </div>
@@ -58,7 +75,7 @@ const Navbar = () => {
                       <User2 size={26} className="pr-2" />
                       View Profile
                     </Button>
-                    <Button variant="ghost">
+                    <Button variant="ghost" onClick={logOut}>
                       <LogOut size={26} className="pr-2" />
                       Logout
                     </Button>
