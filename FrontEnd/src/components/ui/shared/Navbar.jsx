@@ -11,9 +11,11 @@ import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
   const { user } = useSelector((store) => store.auth);
+  const navigate = useNavigate();
   const logOut = async () => {
     try {
       const response = await axios.get(
@@ -21,6 +23,7 @@ const Navbar = () => {
       );
       var data = await response.data;
       if (data.success === true) {
+        navigate("/");
         return toast.success(data.message);
       }
     } catch (error) {
@@ -72,9 +75,12 @@ const Navbar = () => {
                   </div>
                   <div className="flex flex-col gap-4">
                     <Button className="bg-primary">
-                      <User2 size={26} className="pr-2" />
-                      View Profile
+                      <Link to="/profile" className="flex items-center gap-2">
+                        <User2 size={26} className="pr-2" />
+                        View Profile
+                      </Link>
                     </Button>
+
                     <Button variant="ghost" onClick={logOut}>
                       <LogOut size={26} className="pr-2" />
                       Logout
