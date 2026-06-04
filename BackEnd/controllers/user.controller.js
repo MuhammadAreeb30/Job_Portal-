@@ -68,6 +68,10 @@ const login = async (req, res) => {
     const token = jwt.sign(tokenData, process.env.JWT_SECRET_KEY, {
       expiresIn: "1d",
     });
+    res.cookie("token", token, {
+expires: new Date(Date.now() + 86400000),
+      httpOnly: true,
+    });
 
     const userData = {
       _id: user._id,
@@ -78,13 +82,10 @@ const login = async (req, res) => {
       profile: user.profile,
     };
 
+    console.log(token);
+
     return res
       .status(201)
-      .cookie("token", token, {
-        maxAge: 1 * 24 * 60 * 60 * 1000,
-        httpOnly: true,
-        sameSite: "strict",
-      })
       .json({ message: `welcome ${user.fullName}.`, userData, success: true });
   } catch (error) {
     console.log("login error", error);
@@ -111,6 +112,7 @@ const updateProfile = async (req, res) => {
   try {
     const { fullName, email, phone, bio, skills } = req.body;
     const userId = req.id;
+    console.log(userId);
     let skillsArray;
     if (skills) {
       skillsArray = skills.split(",");

@@ -48,6 +48,7 @@ const Login = () => {
       );
 
       var data = await response.data;
+      console.log(data)
       if (data.success === true) {
         dispatch(setUser(data.userData));
         setUserData({ email: "", password: "", role: "" });
